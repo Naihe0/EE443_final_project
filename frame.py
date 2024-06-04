@@ -32,8 +32,8 @@ def create_video_from_frames(input_folder, output_video_path, frame_rate=30):
     print(f"\nVideo saved as {output_video_path}")
 
 # Usage example
-input_folder = "C:\\Users\\yangningrui\\Documents\\EE443_2024_Challenge\\runs\\tracking\\inference\\vis_feature_concat_3_0008"  # Relative path to the frames folder
-output_video_path = "detect_output_video_7.mp4"  # Output video file name
+input_folder = "C:\\Users\\yangningrui\\Documents\\EE443_2024_Challenge\\runs\\tracking\\inference_strongsort\\vis\\camera_0008"  # Relative path to the frames folder
+output_video_path = "detect.mp4"  # Output video file name
 frame_rate = 30  # Adjust frame rate as needed
 
 create_video_from_frames(input_folder, output_video_path, frame_rate)

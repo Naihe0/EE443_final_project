@@ -3,9 +3,9 @@ import os.path as osp
 import cv2
 import numpy as np
 
-results = "./runs/tracking/inference_byte/camera_0008.txt"
+results = "./runs/tracking/inference_strongsort/camera_0008_reformat.txt"
 image_path = "./data/test/camera_0008"
-vis_path = "./runs/tracking/inference/vis__0008"
+vis_path = "./runs/tracking/inference_strongsort/vis_0008"
 
 if not os.path.exists(vis_path):
     os.makedirs(vis_path)
