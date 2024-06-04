@@ -1,0 +1,7 @@
+*.jpg
+*.mp4
+yolov10x.pt
+*.txt
+*.npy
+*.pth
+*.zip
