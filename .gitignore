@@ -5,3 +5,5 @@ yolov10x.pt
 *.npy
 *.pth
 *.zip
+*.avi
+*.mkv
