@@ -2,10 +2,9 @@ import numpy as np
 from scipy.optimize import linear_sum_assignment
 from filterpy.kalman import KalmanFilter
 
-def calculate_feature_cost(feature1, feature2):
-    return np.linalg.norm(feature1 - feature2)
+def calculate_cosine_similarity(feature1, feature2):
+    return np.dot(feature1, feature2) / (np.linalg.norm(feature1) * np.linalg.norm(feature2))
 
-# calculate the overlap ratio of two bounding boxes
 def calculate_iou(bbox1, bbox2):
     x1_1, y1_1, w1, h1 = bbox1
     x1_2, y1_2, w2, h2 = bbox2
@@ -20,15 +19,14 @@ def calculate_iou(bbox1, bbox2):
     if x_right < x_left or y_bottom < y_top:
         return 0.0
     
-    intersection_area = (x_right - x_left + 1) * (y_bottom - y_top + 1)
-    area_bbox1 = (x2_1 - x1_1 + 1) * (y2_1 - y1_1 + 1)
-    area_bbox2 = (x2_2 - x1_2 + 1) * (y2_2 - y1_2 + 1)
+    intersection_area = (x_right - x_left) * (y_bottom - y_top)
+    area_bbox1 = w1 * h1
+    area_bbox2 = w2 * h2
 
     iou = intersection_area / float(area_bbox1 + area_bbox2 - intersection_area)
     return iou
 
-# base class for tracklet
-class tracklet:
+class Tracklet:
     def __init__(self, tracking_ID, box, feature, time):
         self.ID = tracking_ID
         self.boxes = [box]
@@ -75,18 +73,18 @@ class tracklet:
         self.alive = False
     
     def get_avg_features(self):
-        self.final_features = sum(self.features) / len(self.features)
+        self.final_features = np.mean(self.features, axis=0)
 
-# class for multi-object tracker
-class tracker:
+class Tracker:
     def __init__(self):
         self.all_tracklets = []
         self.cur_tracklets = []
 
     def run(self, detections, features=None):
-        for frame_id in range(0, 3600):
+        frame_ids = detections[:, 2].astype(int)  # Ensure frame IDs are integers
+        for frame_id in range(0, frame_ids.max() + 1):
             if frame_id % 100 == 0:
-                print(f'Tracking | cur_frame {frame_id} | total frame 3600')
+                print(f'Tracking | cur_frame {frame_id} | total frame {frame_ids.max() + 1}')
 
             inds = detections[:, 2] == frame_id
             cur_frame_detection = detections[inds]
@@ -98,7 +96,7 @@ class tracker:
             
             if len(self.cur_tracklets) == 0:
                 for idx in range(len(cur_frame_detection)):
-                    new_tracklet = tracklet(len(self.all_tracklets) + 1, cur_frame_detection[idx][3:7], cur_frame_features[idx], frame_id)
+                    new_tracklet = Tracklet(len(self.all_tracklets) + 1, cur_frame_detection[idx][3:7], cur_frame_features[idx], frame_id)
                     self.cur_tracklets.append(new_tracklet)
                     self.all_tracklets.append(new_tracklet)
             else:
@@ -106,7 +104,7 @@ class tracker:
                 for i in range(len(self.cur_tracklets)):
                     for j in range(len(cur_frame_detection)):
                         iou_cost = 1 - calculate_iou(self.cur_tracklets[i].cur_box, cur_frame_detection[j][3:7])
-                        feature_cost = calculate_feature_cost(self.cur_tracklets[i].cur_feature, cur_frame_features[j])
+                        feature_cost = 1 - calculate_cosine_similarity(self.cur_tracklets[i].cur_feature, cur_frame_features[j])
                         cost_matrix[i][j] = 0.5 * iou_cost + 0.5 * feature_cost
 
                 row_inds, col_inds = linear_sum_assignment(cost_matrix)
@@ -116,7 +114,7 @@ class tracker:
                     row, col = row_inds[idx], col_inds[idx]
                     if cost_matrix[row, col] == 1:
                         self.cur_tracklets[row].close()
-                        new_tracklet = tracklet(len(self.all_tracklets) + 1, cur_frame_detection[col][3:7], cur_frame_features[col], frame_id)
+                        new_tracklet = Tracklet(len(self.all_tracklets) + 1, cur_frame_detection[col][3:7], cur_frame_features[col], frame_id)
                         self.cur_tracklets.append(new_tracklet)
                         self.all_tracklets.append(new_tracklet)
                     else:
@@ -124,7 +122,7 @@ class tracker:
 
                 for idx, det in enumerate(cur_frame_detection):
                     if idx not in col_inds:
-                        new_tracklet = tracklet(len(self.all_tracklets) + 1, det[3:7], cur_frame_features[idx], frame_id)
+                        new_tracklet = Tracklet(len(self.all_tracklets) + 1, det[3:7], cur_frame_features[idx], frame_id)
                         self.cur_tracklets.append(new_tracklet)
                         self.all_tracklets.append(new_tracklet)
             
