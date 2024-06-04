@@ -7,7 +7,6 @@ results = "./runs/tracking/inference_byte/camera_0008.txt"
 image_path = "./data/test/camera_0008"
 vis_path = "./runs/tracking/inference/vis__0008"
 
-# 确保可视化结果目录存在
 if not os.path.exists(vis_path):
     os.makedirs(vis_path)
 
