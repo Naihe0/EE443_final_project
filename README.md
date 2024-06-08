@@ -15,7 +15,7 @@ The EE 443 2024 Challenge: Single Camera Multi-Object Tracking aims to enhance t
 
 2. Download the `data.zip` from GDrive link provided in the Ed Discussion
 
-Your folder structure should look like this:
+The folder structure should look like this:
 ```
 ├── data
 │   ├── test
@@ -32,7 +32,7 @@ Your folder structure should look like this:
 ```
 python3 detection/1_prepare_data_in_ultralytics_format.py
 ```
-After the script, your `ultralytics_data` folder should looke like this:
+After the script, the `ultralytics_data` folder should looke like this:
 ```
 ├── data
 ├── detection
