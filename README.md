@@ -2,16 +2,12 @@
 
 ### TA: Chris Yang (cycyang), Chris Yin (c8yin)
 
+### Team Name: You Are Right
+
+### Team Members: Tony Gu, Ningrui Yang, Haoxiong Zhang
+
 ### Task Description
 The EE 443 2024 Challenge: Single Camera Multi-Object Tracking aims to enhance the performance of object detection and tracking algorithms in single-camera environments. Participants will focus on improving detection models, ReID (Re-identification) models, and Multi-Object Tracking (MOT) algorithms to achieve superior object tracking accuracy.
-
-### Important Dates
-- Release of the Challenge & Data: May 3rd, 2024
-- Team Registration Due: May 8th | 11:59:59 pm
-- Release of the Baseline Code: May 9th | 11:59:59 pm
-- Final Submission (Results) Due: June 3rd | 11:59:59 pm
-- Final Presentation (in-person): June 4th & June 6th
-- Github & Final Report Due: June 7th | 11:59:59 pm
 
 ### Baseline Code for Detection
 
@@ -53,10 +49,40 @@ After the script, your `ultralytics_data` folder should looke like this:
 ```
 python3 detection/2_train_ultralytics.py
 ```
-You model will be saved to `runs/detect/` with an unique naming.
+The model will be saved to `runs/detect/` with an unique naming.
 
-5. Inference the model using the testing data (remember to modified the path in the script)
+5. Inference the model using the testing data (remember to modify the path in the script)
 ```
 python3 detection/3_inference_ultralytics.py
 ```
 
+### Baseline Code for Tracking
+
+6. Extract the features
+```
+python3 reid/3_inference_ultralytics.py
+```
+
+7. Tracking
+```
+python3 tracking/main.py
+```
+
+### StrongSORT Code for Tracking
+
+8. Tracking (only compatible with YOLOv7 model)
+```
+cd strong_sort_work_dir/sort
+python3 track_v7.py --yolo-weight [dir_to/detection_model].pt --strong-sort-weights weights/osnet_x0_25_msmt17 --line-thickness 2 --classes 0 2 7 --save-txt --count --source [dir_to/raw_video_to_track].avi
+```
+
+8.1 Produce the raw video for tracking (remember to modify the path to the raw images)
+```
+python3 frame.py
+```
+
+8.2 Train a YOLOv7 detection model (remember to modify the path in test.yaml)
+```
+cd strong_sort_work_dir/yolov7
+python train.py --weights yolov7_training.pt --data data/test.yaml --cfg cfg/training/yolov7.yaml --epochs 150 --batch-size 16
+```
