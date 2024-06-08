@@ -84,5 +84,10 @@ python3 frame.py
 8.2 Train a YOLOv7 detection model (remember to modify the path in test.yaml)
 ```
 cd strong_sort_work_dir/yolov7
-python train.py --weights yolov7_training.pt --data data/test.yaml --cfg cfg/training/yolov7.yaml --epochs 150 --batch-size 16
+python3 train.py --weights yolov7_training.pt --data data/test.yaml --cfg cfg/training/yolov7.yaml --epochs 150 --batch-size 16
+```
+
+8.3 Reformat the .txt to "[camera_id],[track_id],[frame_id],[xmin],[ymin],[width],[height],[-1],[-1]". (remember to change the camera_id and dir paths in the script)
+```
+python3 reformat_txt.py
 ```
